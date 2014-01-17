@@ -1,0 +1,6 @@
+name = Depo System Payment Method 
+description = Provides an payment method to be used with Depo System.
+package = Commerce
+dependencies[] = commerce
+dependencies[] = commerce_payment
+core = 7.x

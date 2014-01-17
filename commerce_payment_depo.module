@@ -1,0 +1,62 @@
+<?php
+
+/**
+ * @file
+ *   Provides a payment method to Depo System.
+ */
+
+
+/**
+ * Implements hook_commerce_payment_method_info().
+ */
+function commerce_payment_depo_commerce_payment_method_info() {
+  $payment_methods = array();
+
+  $payment_methods['commerce_payment_depo'] = array(
+    'title' => t('Depo System'),
+    'description' => t('Payments by Depo System'),
+    'active' => TRUE,
+  );
+
+  return $payment_methods;
+}
+
+/**
+ * Payment method callback: submit form.
+ */
+/*function commerce_payment_depo_submit_form($payment_method, $pane_values, $checkout_pane, $order) {
+  $form = array();
+
+  // Merge in values from the order.
+  if (!empty($order->data['commerce_payment_example'])) {
+    $pane_values += $order->data['commerce_payment_example'];
+  }
+  return $form;
+}*/
+
+/**
+ * Payment method callback: submit form submission.
+ */
+function commerce_payment_depo_submit_form_submit($payment_method, $pane_form, $pane_values, $order, $charge) {
+  commerce_payment_depo_transaction($payment_method, $order, $charge);
+}
+
+/**
+ * Creates an depo payment transaction for the specified charge amount.
+ *
+ * @param $payment_method
+ *   The payment method instance object used to charge this payment.
+ * @param $order
+ *   The order object the payment applies to.
+ * @param $charge
+ *   An array indicating the amount and currency code to charge.
+ */
+function commerce_payment_depo_transaction($payment_method, $order, $charge) {
+  $transaction = commerce_payment_transaction_new('commerce_payment_depo', $order->order_id);
+  $transaction->instance_id = $payment_method['instance_id'];
+  $transaction->amount = $charge['amount'];
+  $transaction->currency_code = $charge['currency_code'];
+  $transaction->status = COMMERCE_PAYMENT_STATUS_PENDING;
+
+  commerce_payment_transaction_save($transaction);
+}
